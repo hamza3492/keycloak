@@ -93,3 +93,4 @@ export default class BlogsController {
         return this.commandBus.execute(new DeleteBlogCommand(Number(id), user.preferred_username))
     }
 }
+
