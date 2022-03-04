@@ -16,11 +16,13 @@ const common_1 = require("@nestjs/common");
 const posts_service_1 = require("./posts.service");
 const createPost_dto_1 = require("./dto/createPost.dto");
 const nest_keycloak_connect_1 = require("nest-keycloak-connect");
+const sentry_interceptor_1 = require("../sentry.interceptor");
 let PostsController = class PostsController {
     constructor(postsService) {
         this.postsService = postsService;
     }
     getAllPosts() {
+        throw new common_1.InternalServerErrorException();
         return this.postsService.getAllPosts();
     }
     getPostById(id) {
@@ -64,8 +66,9 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PostsController.prototype, "deletePost", null);
 PostsController = __decorate([
+    (0, common_1.UseInterceptors)(sentry_interceptor_1.SentryInterceptor),
     (0, common_1.Controller)('posts'),
-    (0, nest_keycloak_connect_1.Resource)('view-post'),
+    (0, nest_keycloak_connect_1.Resource)('ORIENT4'),
     __metadata("design:paramtypes", [posts_service_1.default])
 ], PostsController);
 exports.default = PostsController;

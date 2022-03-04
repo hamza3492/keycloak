@@ -45,12 +45,12 @@ let BlogsController = class BlogsController {
     async updateBlog(id, blog, user) {
         const username = user.preferred_username;
         console.log(username, "Username");
-        await this.keycloakProtectionService.updateResource('38', blog.name);
+        await this.keycloakProtectionService.updateResource(id, blog.name);
         return this.commandBus.execute(new updateBlog_command_1.UpdateBlogCommand((id), blog, username));
     }
     async deleteBlog(id, user) {
         const user_id = user.sub;
-        await this.keycloakProtectionService.deleteResource('38');
+        await this.keycloakProtectionService.deleteResource(id);
         return this.commandBus.execute(new deleteBlog_command_1.DeleteBlogCommand(Number(id), user.preferred_username));
     }
 };

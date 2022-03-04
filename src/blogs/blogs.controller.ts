@@ -81,7 +81,7 @@ export default class BlogsController {
     async updateBlog(@Param('id') id: string, @Body() blog: UpdateBlogDto, @AuthenticatedUser() user: any) {
         const username = user.preferred_username
         console.log(username, "Username")
-        await this.keycloakProtectionService.updateResource('38', blog.name)
+        await this.keycloakProtectionService.updateResource(id, blog.name)
         return this.commandBus.execute(new UpdateBlogCommand((id), blog, username))
     }
 
@@ -89,7 +89,7 @@ export default class BlogsController {
     @Scopes('view')
     async deleteBlog(@Param('id') id: string, @AuthenticatedUser() user: any) {
         const user_id = user.sub
-        await this.keycloakProtectionService.deleteResource('38')
+        await this.keycloakProtectionService.deleteResource(id)
         return this.commandBus.execute(new DeleteBlogCommand(Number(id), user.preferred_username))
     }
 }

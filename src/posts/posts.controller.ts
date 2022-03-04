@@ -1,12 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, InternalServerErrorException, Param, Post, Put, UseInterceptors } from '@nestjs/common';
 import PostsService from './posts.service';
 import CreatePostDto from './dto/createPost.dto';
 import UpdatePostDto from './dto/updatePost.dto';
 import { Resource, Roles, Scopes, } from 'nest-keycloak-connect';
+import { SentryInterceptor } from '../sentry.interceptor';
 
+@UseInterceptors(SentryInterceptor)
 @Controller('posts')
-// @Resource('create-post') // user 1
-@Resource('view-post') // user 2
+@Resource('ORIENT4') // user 1
+// @Resource('view-post') // user 2
 // @Resource('create-view-post') // user 3
 // @Resource('complete-access') // user 4 and user 5  
 // @Resource('full-access') // user 5
@@ -19,6 +21,7 @@ export default class PostsController {
     // @Roles({ roles: ['admin', 'users'] })
     @Scopes('view')
     getAllPosts() {
+        throw new InternalServerErrorException()
         return this.postsService.getAllPosts();
     }
 
