@@ -10,9 +10,9 @@ import Blogs from '../blogs/blogs.entity';
         TypeOrmModule.forRoot({
             type: 'postgres',
             // logger: new DatabaseLogger(),
-            host: '127.0.0.1',
+            host: 'localhost',
             port: 5432,
-            username: 'admin',
+            username: 'postgres',
             password: 'admin',
             database: 'keycloak',
             //! To check database logs in console "logging:true"

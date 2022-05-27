@@ -5,7 +5,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import Blogs from '../../blogs.entity';
 import { In, Repository } from 'typeorm';
 import { KeycloakProtectionService } from '../../../keycloak/keycloak-protection.service';
-import { Console } from 'console';
 
 @QueryHandler(GetAllBlogsQuery)
 export class GetBlogsHandler implements IQueryHandler<GetAllBlogsQuery> {

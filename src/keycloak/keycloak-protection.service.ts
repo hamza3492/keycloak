@@ -28,7 +28,7 @@ export class KeycloakProtectionService {
 
     public async createResource(data: any): Promise<any> {
         try {
-            console.log(data, "DATA")
+            // console.log(data, "DATA")
             const pat = await this.getProtectionApiToken();
             // const refresh_token = await this.getRefreshToken()
             const url = await this.getBaseUrl();

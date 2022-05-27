@@ -29,7 +29,7 @@ AppModule = __decorate([
             posts_module_1.PostsModule,
             keycloak_module_1.KeycloakModule,
             database_module_1.DatabaseModule,
-            blogs_module_1.BlogsModule
+            blogs_module_1.BlogsModule,
         ],
         controllers: [],
         providers: [
@@ -44,7 +44,7 @@ AppModule = __decorate([
             {
                 provide: core_1.APP_GUARD,
                 useClass: nest_keycloak_connect_1.RoleGuard
-            }
+            },
         ],
     })
 ], AppModule);

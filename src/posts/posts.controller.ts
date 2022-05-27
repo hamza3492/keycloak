@@ -3,19 +3,27 @@ import PostsService from './posts.service';
 import CreatePostDto from './dto/createPost.dto';
 import UpdatePostDto from './dto/updatePost.dto';
 import { Resource, Roles, Scopes, } from 'nest-keycloak-connect';
-import { SentryInterceptor } from '../sentry.interceptor';
+// import { InjectSentry, SentryService } from '@ntegral/nestjs-sentry';
+// import { SentryInterceptor } from '../sentry.interceptor';
+import { Postt } from './posts';
 
-@UseInterceptors(SentryInterceptor)
+
+// @UseInterceptors(SentryInterceptor)
 @Controller('posts')
-@Resource('ORIENT4') // user 1
+@Resource(Postt.name)
+// @Resource('ORIENT4') // user 1
 // @Resource('view-post') // user 2
 // @Resource('create-view-post') // user 3
 // @Resource('complete-access') // user 4 and user 5  
 // @Resource('full-access') // user 5
 export default class PostsController {
     constructor(
+        // @InjectSentry() private readonly client: SentryService,
         private readonly postsService: PostsService
-    ) { }
+    ) {
+        // client.debug('App Controller loaded')
+
+    }
 
     @Get()
     // @Roles({ roles: ['admin', 'users'] })

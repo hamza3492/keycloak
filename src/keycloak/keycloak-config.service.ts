@@ -15,7 +15,7 @@ export class KeycloakConfigService implements KeycloakConnectOptionsFactory {
             realm: 'keycloak-testing',
             clientId: 'keycloak-testing',
             secret: 'udRXpHUBO1krIWcvd4p6wboKcwOXcOmN',
-            policyEnforcement: PolicyEnforcementMode.PERMISSIVE,
+            // policyEnforcement: PolicyEnforcementMode.PERMISSIVE,
             logLevels: ['warn'],
             useNestLogger: false,
         };

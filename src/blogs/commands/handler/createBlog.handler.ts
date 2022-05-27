@@ -15,19 +15,21 @@ export class CreateBlogHandler implements ICommandHandler<CreateBlogCommand> {
     ) { }
 
     async execute(command: CreateBlogCommand) {
-        console.log(command, "Test  ")
+        console.log(command, "HANDLER")
+        // console.log(command.user_id, 'user_id');
         const newBlog = this.blogRepository.create({
             ...command.blog,
             id: command.blog.id,
-            // user_id: command.user_id,
+            user_id: command.user_id,
         });
 
         // if (!command.user_id) {
         //     throw new HttpException('NO User Found', HttpStatus.NOT_FOUND)
         // }
 
-        console.log(command.user_id)
-        await this.blogRepository.save(newBlog);
+        // console.log(command.user_id, 'USER ID')
+        // console.log(newBlog);
+        await this.blogRepository.save(newBlog, command.user_id);
 
         // Tell Keycloak service to create a resourcw with that user id ==> in below code
 

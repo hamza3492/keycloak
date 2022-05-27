@@ -5,7 +5,7 @@ import { Resource, Roles, Scopes, AuthenticatedUser } from 'nest-keycloak-connec
 
 
 @Controller('keycloak')
-@Resource('create-post') // user 1
+// @Resource('create-post') // user 1
 // @Resource('view-post') // user 2
 // @Resource('create-view-post') // user 3
 // @Resource('complete-access') // user 4 and user 5  

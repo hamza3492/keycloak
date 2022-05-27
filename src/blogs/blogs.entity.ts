@@ -9,7 +9,8 @@ class Blogs {
     @Column()
     public name: string;
 
-    @Column({ nullable: true })
+    // @Column({ nullable: true })
+    @Column()
     public user_id: string
 
     @Column()

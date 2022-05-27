@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.AuthenticatedUser = void 0;
+const common_1 = require("@nestjs/common");
+const util_1 = require("../util");
+exports.AuthenticatedUser = (0, common_1.createParamDecorator)((data, ctx) => {
+    const [req] = (0, util_1.extractRequest)(ctx);
+    return req.user;
+});
+//# sourceMappingURL=authenticated-user.decorator.js.map
