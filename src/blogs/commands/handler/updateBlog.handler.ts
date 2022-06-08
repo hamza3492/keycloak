@@ -21,7 +21,7 @@ export class UpdateBlogHandler implements ICommandHandler<UpdateBlogCommand> {
 
             const usersRecordIds: string[] = await this.keycloakProtectionService.query({ owner: username });
 
-            const data = await this.blogRepository.findOne({ id: Number(command.id) })
+            const data = await this.blogRepository.findOne({ id: command.id })
 
             if (!data) {
                 throw new HttpException('Not data found', HttpStatus.NOT_FOUND)
@@ -30,17 +30,17 @@ export class UpdateBlogHandler implements ICommandHandler<UpdateBlogCommand> {
 
             // console.log(command.username, "USER_ID  ")
 
-            if (usersRecordIds.includes(data.id.toString())) {
-                await this.blogRepository.update(command.id, command.blog)
+            if (usersRecordIds.includes(data.id)) {
+                const updatedData = await this.blogRepository.update(command.id, command.blog)
                 await this.keycloakProtectionService.updateResource(command.id, { name: blog.name })
-                return data
+                return updatedData
             } else {
                 throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED)
             }
 
 
         } catch (err) {
-            console.log(err.message)
+            console.log(err)
         }
     }
 }

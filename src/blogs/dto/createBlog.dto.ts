@@ -1,9 +1,9 @@
-import { IsString, IsNotEmpty, ValidateNested } from 'class-validator';
+import { IsString, IsNotEmpty, ValidateNested, UUIDVersion } from 'class-validator';
 import { Type } from 'class-transformer';
 import ObjectWithIdDTO from '../../utils/objectWithId.dto';
 
 export class CreateBlogDto {
-    id: number;
+    id: string;
 
     @IsString()
     @IsNotEmpty()

@@ -4,6 +4,7 @@ import {
   Inject,
   Injectable,
   Logger,
+  Request,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import * as KeycloakConnect from 'keycloak-connect';
@@ -21,7 +22,7 @@ import { KeycloakConnectConfig } from '../interface/keycloak-connect-options.int
 import { KeycloakMultiTenantService } from '../services/keycloak-multitenant.service';
 import { extractRequest, useKeycloak } from '../util';
 import { KeycloakProtectionService } from '../../src/keycloak/keycloak-protection.service';
-
+import { Param, Query } from '@nestjs/common';
 /**
  * This adds a resource guard, which is policy enforcement by default is permissive.
  * Only controllers annotated with `@Resource` and methods with `@Scopes`
@@ -41,7 +42,7 @@ export class ResourceGuard implements CanActivate {
     private readonly keycloakProtectionService: KeycloakProtectionService
   ) { }
 
-  async canActivate(context: ExecutionContext): Promise<boolean> {
+  async canActivate(@Param() context: ExecutionContext): Promise<boolean> {
     const resource = this.reflector.get<string>(
       META_RESOURCE,
       context.getClass(),
@@ -60,8 +61,8 @@ export class ResourceGuard implements CanActivate {
 
     // Default to permissive
     const pem =
-      this.keycloakOpts.policyEnforcement || PolicyEnforcementMode.PERMISSIVE;
-    const shouldAllow = pem === PolicyEnforcementMode.PERMISSIVE;
+      this.keycloakOpts.policyEnforcement || PolicyEnforcementMode.ENFORCING;
+    const shouldAllow = pem === PolicyEnforcementMode.ENFORCING;
 
     // No resource given, check policy enforcement mode
     if (!resource) {
@@ -99,6 +100,8 @@ export class ResourceGuard implements CanActivate {
     const permissions = scopes.map(scope => `${resource}:${scope}`);
     // Extract request/response
     const [request, response] = extractRequest(context);
+    // console.log(request.params.id);
+
 
     // if is not an HTTP request ignore this guard
     if (!request) {
@@ -110,39 +113,51 @@ export class ResourceGuard implements CanActivate {
       return true;
     }
 
-    console.log(request.body.id, 'Request')
+    // console.log(request.body.id, 'Request')
     const user = request.user?.preferred_username ?? 'user';
 
-    const data = await this.keycloakProtectionService.query({ owner: request.user.preferred_username });
-    console.log(request.user, ' USER FROM GUARD')
-    console.log(data, ' DATA FROM GUARD')
+    // const data = await this.keycloakProtectionService.query({ owner: request.user.preferred_username });
+    // console.log(request.user, ' USER FROM GUARD')
+    // console.log(data, ' DATA FROM GUARD', typeof (data));
+    // console.log(Object.keys(data));
+    // console.log(Object.values(data));
+    // const exists = Object.values(data).includes(request.params.id);
+    // const ResourceData = await this.keycloakProtectionService.getOne(request.params.id)
+    // console.log(ResourceData, 'Resource Data');
+    // console.log(exists, 'exists')
 
-    // const enforcerFn = createEnforcerContext(request, response, enforcerOpts,);
-    // const keycloak = useKeycloak(
-    //   request,
-    //   request.accessTokenJWT,
-    //   this.singleTenant,
-    //   this.multiTenant,
-    //   this.keycloakOpts,
-    // );
-    // const isAllowed = await enforcerFn(keycloak, permissions);
+
+    const enforcerFn = createEnforcerContext(request, response, enforcerOpts,);
+    const keycloak = useKeycloak(
+      request,
+      request.accessTokenJWT,
+      this.singleTenant,
+      this.multiTenant,
+      this.keycloakOpts,
+    );
+    const isAllowed = await enforcerFn(keycloak, permissions);
+    console.log(isAllowed, 'isAllowed');
 
     // If statement for verbose logging only
-    // if (!isAllowed) {
-    //   this.logger.verbose(`Resource [ ${resource} ] denied to [ ${user} ]`);
-    // } else {
-    //   this.logger.verbose(`Resource [ ${resource} ] granted to [ ${user} ]`);
-    // }
-    console.log(request.body.id.includes(data.id));
-    if (!request.body.id.includes(data.id)) {
+    if (!isAllowed) {
       this.logger.verbose(`Resource [ ${resource} ] denied to [ ${user} ]`);
-      return false
+      // this.logger.verbose(`Resource [ ${ResourceData.name} ] denied to [ ${user} ]`);
     } else {
       this.logger.verbose(`Resource [ ${resource} ] granted to [ ${user} ]`);
-      return true
+      // this.logger.verbose(`Resource [ ${ResourceData.name} ] granted to [ ${user} ]`);
     }
 
-    // return isAllowed;
+
+    // console.log(request.body.id.includes(data.id));
+    // if (!request.body.id.includes(data.id)) {
+    //   this.logger.verbose(`Resource [ ${resource} ] denied to [ ${user} ]`);
+    //   return false
+    // } else {
+    //   this.logger.verbose(`Resource [ ${resource} ] granted to [ ${user} ]`);
+    //   return true
+    // }
+
+    return isAllowed;
   }
 }
 
@@ -157,7 +172,11 @@ const createEnforcerContext = (
       keycloak.enforcer(permissions, options)(request, response, (_: any) => {
         if (request.resourceDenied) {
           resolve(false);
-        } else {
+        }
+        else if (!request.resource) {
+          resolve(true);
+        }
+        else {
           resolve(true);
         }
       }),

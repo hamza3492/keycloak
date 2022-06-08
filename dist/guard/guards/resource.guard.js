@@ -24,6 +24,7 @@ const scopes_decorator_1 = require("../decorators/scopes.decorator");
 const keycloak_multitenant_service_1 = require("../services/keycloak-multitenant.service");
 const util_1 = require("../util");
 const keycloak_protection_service_1 = require("../../src/keycloak/keycloak-protection.service");
+const common_2 = require("@nestjs/common");
 let ResourceGuard = class ResourceGuard {
     constructor(singleTenant, keycloakOpts, logger, multiTenant, reflector, keycloakProtectionService) {
         this.singleTenant = singleTenant;
@@ -39,8 +40,8 @@ let ResourceGuard = class ResourceGuard {
         const scopes = this.reflector.get(scopes_decorator_1.META_SCOPES, context.getHandler());
         const isUnprotected = this.reflector.getAllAndOverride(public_decorator_1.META_UNPROTECTED, [context.getClass(), context.getHandler()]);
         const enforcerOpts = this.reflector.getAllAndOverride(enforcer_options_decorator_1.META_ENFORCER_OPTIONS, [context.getClass(), context.getHandler()]);
-        const pem = this.keycloakOpts.policyEnforcement || constants_1.PolicyEnforcementMode.PERMISSIVE;
-        const shouldAllow = pem === constants_1.PolicyEnforcementMode.PERMISSIVE;
+        const pem = this.keycloakOpts.policyEnforcement || constants_1.PolicyEnforcementMode.ENFORCING;
+        const shouldAllow = pem === constants_1.PolicyEnforcementMode.ENFORCING;
         if (!resource) {
             if (shouldAllow) {
                 this.logger.verbose(`Controller has no @Resource defined, request allowed due to policy enforcement`);
@@ -69,22 +70,26 @@ let ResourceGuard = class ResourceGuard {
             this.logger.verbose(`Route has no user, and is public, allowed`);
             return true;
         }
-        console.log(request.body.id, 'Request');
         const user = (_b = (_a = request.user) === null || _a === void 0 ? void 0 : _a.preferred_username) !== null && _b !== void 0 ? _b : 'user';
-        const data = await this.keycloakProtectionService.query({ owner: request.user.preferred_username });
-        console.log(request.user, ' USER FROM GUARD');
-        console.log(data, ' DATA FROM GUARD');
-        console.log(request.body.id.includes(data.id));
-        if (!request.body.id.includes(data.id)) {
+        const enforcerFn = createEnforcerContext(request, response, enforcerOpts);
+        const keycloak = (0, util_1.useKeycloak)(request, request.accessTokenJWT, this.singleTenant, this.multiTenant, this.keycloakOpts);
+        const isAllowed = await enforcerFn(keycloak, permissions);
+        console.log(isAllowed, 'isAllowed');
+        if (!isAllowed) {
             this.logger.verbose(`Resource [ ${resource} ] denied to [ ${user} ]`);
-            return false;
         }
         else {
             this.logger.verbose(`Resource [ ${resource} ] granted to [ ${user} ]`);
-            return true;
         }
+        return isAllowed;
     }
 };
+__decorate([
+    __param(0, (0, common_2.Param)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ResourceGuard.prototype, "canActivate", null);
 ResourceGuard = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, common_1.Inject)(constants_1.KEYCLOAK_INSTANCE)),
@@ -99,6 +104,9 @@ exports.ResourceGuard = ResourceGuard;
 const createEnforcerContext = (request, response, options) => (keycloak, permissions) => new Promise((resolve, _) => keycloak.enforcer(permissions, options)(request, response, (_) => {
     if (request.resourceDenied) {
         resolve(false);
+    }
+    else if (!request.resource) {
+        resolve(true);
     }
     else {
         resolve(true);

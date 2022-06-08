@@ -29,21 +29,21 @@ let UpdateBlogHandler = class UpdateBlogHandler {
         try {
             const { username, id, blog } = command;
             const usersRecordIds = await this.keycloakProtectionService.query({ owner: username });
-            const data = await this.blogRepository.findOne({ id: Number(command.id) });
+            const data = await this.blogRepository.findOne({ id: command.id });
             if (!data) {
                 throw new common_1.HttpException('Not data found', common_1.HttpStatus.NOT_FOUND);
             }
-            if (usersRecordIds.includes(data.id.toString())) {
-                await this.blogRepository.update(command.id, command.blog);
+            if (usersRecordIds.includes(data.id)) {
+                const updatedData = await this.blogRepository.update(command.id, command.blog);
                 await this.keycloakProtectionService.updateResource(command.id, { name: blog.name });
-                return data;
+                return updatedData;
             }
             else {
                 throw new common_1.HttpException('Unauthorized', common_1.HttpStatus.UNAUTHORIZED);
             }
         }
         catch (err) {
-            console.log(err.message);
+            console.log(err);
         }
     }
 };

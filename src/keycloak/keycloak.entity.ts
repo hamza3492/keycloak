@@ -3,7 +3,7 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 @Entity()
 class Keycloak {
     @PrimaryGeneratedColumn()
-    public id: number;
+    public id: string;
 
     @Column()
     public client_id: string;

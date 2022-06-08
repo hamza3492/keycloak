@@ -32,7 +32,7 @@ export class GetBlogsHandler implements IQueryHandler<GetAllBlogsQuery> {
 
             const { username } = query;
 
-            const usersRecordIds: number[] = await this.keycloakProtectionService.query({ owner: username });
+            const usersRecordIds: string[] = await this.keycloakProtectionService.query({ owner: username });
             console.log(usersRecordIds, "RECORDS")
 
             // const convert = usersRecordIds.map(ids => Number(ids))

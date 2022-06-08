@@ -16,7 +16,7 @@ class GetBlogDto {
 __decorate([
     (0, class_transformer_1.Type)(() => Number),
     (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", Number)
+    __metadata("design:type", String)
 ], GetBlogDto.prototype, "blogId", void 0);
 exports.default = GetBlogDto;
 //# sourceMappingURL=getBlog.dto.js.map

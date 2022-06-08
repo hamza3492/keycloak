@@ -5,6 +5,7 @@ import Blogs from '../../blogs.entity';
 import { Repository } from 'typeorm';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { KeycloakProtectionService } from 'src/keycloak/keycloak-protection.service';
+import { v4 as uuidv4 } from 'uuid';
 
 @CommandHandler(CreateBlogCommand)
 export class CreateBlogHandler implements ICommandHandler<CreateBlogCommand> {
@@ -13,16 +14,16 @@ export class CreateBlogHandler implements ICommandHandler<CreateBlogCommand> {
         private blogRepository: Repository<Blogs>,
         private keycloakProtectionService: KeycloakProtectionService
     ) { }
-
     async execute(command: CreateBlogCommand) {
+        const resourceId = uuidv4();
         console.log(command, "HANDLER")
         // console.log(command.user_id, 'user_id');
         const newBlog = this.blogRepository.create({
             ...command.blog,
-            id: command.blog.id,
+            id: resourceId,
             user_id: command.user_id,
         });
-
+        console.log('New Blog', newBlog);
         // if (!command.user_id) {
         //     throw new HttpException('NO User Found', HttpStatus.NOT_FOUND)
         // }
@@ -35,7 +36,8 @@ export class CreateBlogHandler implements ICommandHandler<CreateBlogCommand> {
 
         const resourceData = {
             name: command.blog.name,
-            _id: command.blog.id,
+            _id: resourceId,
+            // _id: command.blog.id,
             owner: {
                 id: command.user_id,
             },

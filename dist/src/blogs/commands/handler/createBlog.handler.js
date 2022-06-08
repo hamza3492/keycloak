@@ -19,18 +19,21 @@ const typeorm_1 = require("@nestjs/typeorm");
 const blogs_entity_1 = require("../../blogs.entity");
 const typeorm_2 = require("typeorm");
 const keycloak_protection_service_1 = require("../../../keycloak/keycloak-protection.service");
+const uuid_1 = require("uuid");
 let CreateBlogHandler = class CreateBlogHandler {
     constructor(blogRepository, keycloakProtectionService) {
         this.blogRepository = blogRepository;
         this.keycloakProtectionService = keycloakProtectionService;
     }
     async execute(command) {
+        const resourceId = (0, uuid_1.v4)();
         console.log(command, "HANDLER");
-        const newBlog = this.blogRepository.create(Object.assign(Object.assign({}, command.blog), { id: command.blog.id, user_id: command.user_id }));
+        const newBlog = this.blogRepository.create(Object.assign(Object.assign({}, command.blog), { id: resourceId, user_id: command.user_id }));
+        console.log('New Blog', newBlog);
         await this.blogRepository.save(newBlog, command.user_id);
         const resourceData = {
             name: command.blog.name,
-            _id: command.blog.id,
+            _id: resourceId,
             owner: {
                 id: command.user_id,
             },

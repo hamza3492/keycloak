@@ -1,6 +1,6 @@
 export class DeleteBlogCommand {
     constructor(
-        public id: number,
+        public id: string,
         public username: any
     ) { }
 }

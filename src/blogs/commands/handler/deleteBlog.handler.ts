@@ -18,7 +18,7 @@ export class DeleteBlogHandler implements ICommandHandler<DeleteBlogCommand>{
         const { id, username } = command
 
         const usersRecordIds: string[] = await this.keycloakProtectionService.query({ owner: username });
-        console.log(usersRecordIds)
+        console.log(usersRecordIds, 'UsersRecordIds')
 
 
         const data = await this.blogRepository.findOne({ id: command.id })
@@ -29,13 +29,14 @@ export class DeleteBlogHandler implements ICommandHandler<DeleteBlogCommand>{
         }
 
 
-        console.log(usersRecordIds.includes(data.id.toString()))
+        console.log(usersRecordIds.includes(data.id))
 
 
-        if (usersRecordIds.includes(data.id.toString())) {
+        if (usersRecordIds.includes(data.id)) {
 
             await this.blogRepository.delete(command.id)
-            const deleteResourceById = await this.keycloakProtectionService.deleteResource(command.id.toString())
+            console.log('After deleting for Postgres');
+            await this.keycloakProtectionService.deleteResource(command.id)
             return data
         } else {
             throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED)

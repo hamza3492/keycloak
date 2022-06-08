@@ -7,5 +7,5 @@ export declare class UpdateBlogHandler implements ICommandHandler<UpdateBlogComm
     private blogRepository;
     private keycloakProtectionService;
     constructor(blogRepository: Repository<Blogs>, keycloakProtectionService: KeycloakProtectionService);
-    execute(command: UpdateBlogCommand): Promise<Blogs>;
+    execute(command: UpdateBlogCommand): Promise<import("typeorm").UpdateResult>;
 }

@@ -4,7 +4,7 @@ import { Type } from 'class-transformer';
 class GetBlogDto {
     @Type(() => Number)
     @IsOptional()
-    blogId?: number;
+    blogId?: string;
 }
 
 export default GetBlogDto

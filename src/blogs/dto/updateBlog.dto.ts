@@ -4,7 +4,7 @@ import ObjectWithIdDTO from '../../utils/objectWithId.dto';
 
 export class CreateBlogDto {
     @IsNumber()
-    id: number;
+    id: string;
 
     @IsString()
     @IsNotEmpty()

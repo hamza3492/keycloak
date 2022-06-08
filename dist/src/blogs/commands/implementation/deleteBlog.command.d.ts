@@ -1,5 +1,5 @@
 export declare class DeleteBlogCommand {
-    id: number;
+    id: string;
     username: any;
-    constructor(id: number, username: any);
+    constructor(id: string, username: any);
 }

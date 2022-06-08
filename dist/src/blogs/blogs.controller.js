@@ -37,7 +37,7 @@ let BlogsController = class BlogsController {
     }
     async getOneBlogs({ blogId }, id, user) {
         console.log(user);
-        return this.queryBus.execute(new getOneBlog_query_1.GetOneBlogQuery(Number(id), user.preferred_username));
+        return this.queryBus.execute(new getOneBlog_query_1.GetOneBlogQuery(id, user.preferred_username));
     }
     async getBlogs({ blogId }, user) {
         console.log(user);
@@ -45,19 +45,17 @@ let BlogsController = class BlogsController {
     }
     async updateBlog(id, blog, user) {
         const username = user.preferred_username;
-        console.log(username, "Username");
         await this.keycloakProtectionService.updateResource(id, blog.name);
         return this.commandBus.execute(new updateBlog_command_1.UpdateBlogCommand((id), blog, username));
     }
     async deleteBlog(id, user) {
         const user_id = user.sub;
-        await this.keycloakProtectionService.deleteResource(id);
-        return this.commandBus.execute(new deleteBlog_command_1.DeleteBlogCommand(Number(id), user.preferred_username));
+        return this.commandBus.execute(new deleteBlog_command_1.DeleteBlogCommand(id, user.preferred_username));
     }
 };
 __decorate([
     (0, common_1.Post)(),
-    (0, nest_keycloak_connect_1.Scopes)('view'),
+    (0, nest_keycloak_connect_1.Scopes)('create'),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, nest_keycloak_connect_1.AuthenticatedUser)()),
     __metadata("design:type", Function),
@@ -104,7 +102,6 @@ __decorate([
 ], BlogsController.prototype, "deleteBlog", null);
 BlogsController = __decorate([
     (0, common_1.Controller)('blogs'),
-    (0, nest_keycloak_connect_1.Resource)('ORIENT1'),
     __metadata("design:paramtypes", [cqrs_1.CommandBus,
         cqrs_1.QueryBus,
         keycloak_protection_service_1.KeycloakProtectionService])

@@ -28,16 +28,17 @@ let DeleteBlogHandler = class DeleteBlogHandler {
     async execute(command) {
         const { id, username } = command;
         const usersRecordIds = await this.keycloakProtectionService.query({ owner: username });
-        console.log(usersRecordIds);
+        console.log(usersRecordIds, 'UsersRecordIds');
         const data = await this.blogRepository.findOne({ id: command.id });
         console.log(data, "DATA");
         if (!data) {
             throw new common_1.HttpException('No data found', common_1.HttpStatus.NOT_FOUND);
         }
-        console.log(usersRecordIds.includes(data.id.toString()));
-        if (usersRecordIds.includes(data.id.toString())) {
+        console.log(usersRecordIds.includes(data.id));
+        if (usersRecordIds.includes(data.id)) {
             await this.blogRepository.delete(command.id);
-            const deleteResourceById = await this.keycloakProtectionService.deleteResource(command.id.toString());
+            console.log('After deleting for Postgres');
+            await this.keycloakProtectionService.deleteResource(command.id);
             return data;
         }
         else {

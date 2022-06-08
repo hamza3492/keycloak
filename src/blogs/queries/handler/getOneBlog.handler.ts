@@ -16,16 +16,19 @@ export class GetOneBlogHandler implements IQueryHandler<GetOneBlogQuery> {
     ) { }
 
     async execute(query: GetOneBlogQuery): Promise<Blogs> {
-        console.log(query.ID);
+        console.log(query.ID, 'Query Id');
         const { username } = query
 
-
-        // await this.keycloakProtectionService.getOne(query.id)
+        this.keycloakProtectionService.getOne(query.ID)
         const usersRecordIds: string[] = await this.keycloakProtectionService.query({ owner: username });
         console.log(usersRecordIds, "RECORDS")
 
         // const result = await this.blogsRepository.find({ id: In(usersRecordIds) });
         const result = await this.blogsRepository.findOne({ where: { id: query.ID } });
+
+        if (!result) {
+            throw new HttpException('No Data Found', HttpStatus.NOT_FOUND)
+        }
 
         console.log(usersRecordIds.includes(result.id.toString()))
 

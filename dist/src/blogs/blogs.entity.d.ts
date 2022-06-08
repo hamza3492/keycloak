@@ -1,5 +1,5 @@
 declare class Blogs {
-    id: number;
+    id: string;
     name: string;
     user_id: string;
     content: string;

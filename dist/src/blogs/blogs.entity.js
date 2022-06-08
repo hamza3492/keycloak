@@ -14,7 +14,7 @@ let Blogs = class Blogs {
 };
 __decorate([
     (0, typeorm_1.PrimaryColumn)(),
-    __metadata("design:type", Number)
+    __metadata("design:type", String)
 ], Blogs.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.Column)(),

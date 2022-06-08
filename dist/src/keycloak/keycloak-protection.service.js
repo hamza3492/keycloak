@@ -72,6 +72,7 @@ let KeycloakProtectionService = class KeycloakProtectionService {
     }
     async getOne(resourceId) {
         try {
+            console.log(resourceId, 'resourceId');
             const pat = await this.getProtectionApiToken();
             const url = await this.getBaseUrl();
             const result = await this.httpService
@@ -110,6 +111,7 @@ let KeycloakProtectionService = class KeycloakProtectionService {
     async query(params) {
         const pat = await this.getRefreshToken();
         const url = await this.getBaseUrl();
+        console.log(params, 'Params....');
         const result = await this.httpService
             .get(url, {
             headers: {
@@ -119,6 +121,7 @@ let KeycloakProtectionService = class KeycloakProtectionService {
             params
         })
             .toPromise();
+        console.log(result.data, 'Query Data from keycloak protected service');
         return result.data;
     }
     async getRefreshToken() {

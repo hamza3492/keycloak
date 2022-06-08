@@ -1,4 +1,4 @@
 declare class GetBlogDto {
-    blogId?: number;
+    blogId?: string;
 }
 export default GetBlogDto;

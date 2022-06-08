@@ -26,11 +26,15 @@ let GetOneBlogHandler = class GetOneBlogHandler {
         this.keycloakProtectionService = keycloakProtectionService;
     }
     async execute(query) {
-        console.log(query.ID);
+        console.log(query.ID, 'Query Id');
         const { username } = query;
+        this.keycloakProtectionService.getOne(query.ID);
         const usersRecordIds = await this.keycloakProtectionService.query({ owner: username });
         console.log(usersRecordIds, "RECORDS");
         const result = await this.blogsRepository.findOne({ where: { id: query.ID } });
+        if (!result) {
+            throw new common_1.HttpException('No Data Found', common_1.HttpStatus.NOT_FOUND);
+        }
         console.log(usersRecordIds.includes(result.id.toString()));
         if (usersRecordIds.includes(result.id.toString())) {
             return result;
